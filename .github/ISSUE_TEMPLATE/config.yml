@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/Elfinik/burst-trace/blob/main/README.md
+    about: Please check the documentation before opening a new issue.
+  - name: Discussions
+    url: https://github.com/Elfinik/burst-trace/discussions
+    about: For questions and general support, please use GitHub Discussions.

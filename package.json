@@ -1,0 +1,40 @@
+{
+  "name": "com.elfinik.burst-trace",
+  "version": "1.0.0",
+  "displayName": "Burst Trace",
+  "description": "High-performance, zero-allocation stack trace logger for Unity Mono/DOTS, Burst, and Jobs. Safely capture call chains in multithreaded code.",
+  "unity": "2022.3",
+  "license": "MIT",
+  "author": {
+    "name": "Elfinik",
+    "email": "253802134+Elfinik@users.noreply.github.com",
+    "url": "https://github.com/elfinik/burst-trace"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Elfinik/burst-trace.git"
+  },
+  "dependencies": {
+    "com.unity.burst": "1.8.13",
+    "com.unity.collections": "2.4.1",
+    "com.unity.mathematics": "1.2.6"
+  },
+  "documentationUrl": "https://github.com/Elfinik/burst-trace/blob/main/README.md",
+  "changelogUrl": "https://github.com/Elfinik/burst-trace/blob/main/CHANGELOG.md",
+"keywords": [
+    "burst",
+    "debug",
+    "logger",
+    "performance",
+    "ecs",
+    "stacktrace",
+    "dots"
+  ],
+  "samples": [
+    {
+      "displayName": "Samples",
+      "description": "Samples",
+      "path": "Samples~" 
+    }
+  ]
+}

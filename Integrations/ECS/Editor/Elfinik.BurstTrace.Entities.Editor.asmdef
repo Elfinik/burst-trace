@@ -1,0 +1,25 @@
+{
+    "name": "Elfinik.BurstTrace.Entities.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d5b6d673878904c4e86229129b6086a2",
+        "GUID:97fc03c43cd547f4a8ef4d777c52a234"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.entities",
+            "expression": "1.0.0",
+            "define": "BURST_TRACE_ENTITIES_SUPPORT"
+        }
+    ],
+    "noEngineReferences": false
+}
