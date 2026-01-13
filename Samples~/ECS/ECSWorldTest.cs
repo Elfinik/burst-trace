@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 #if BURST_TRACE_ENTITIES_SUPPORT
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
@@ -9,8 +10,12 @@ namespace Elfinik.BurstTrace.Samples
 {
     public class ECSWorldTest : MonoBehaviour
     {
+        public static ECSWorldTest Instance;
+        public Text outputText;
+
         void Start()
         {
+            Instance = this;
             var em = World.DefaultGameObjectInjectionWorld.EntityManager;
             var entityFromStart = em.CreateEntity();
             em.SetName(entityFromStart, "Spawned From Start");
@@ -58,16 +63,27 @@ namespace Elfinik.BurstTrace.Samples
         public float myHP;
         public TraceHandle destroyedStackTrace;
     }
+    public struct HistoryElement_Destroy : IBufferElementData
+    {
+        public Entity destroyedEntity;
+        public TraceHandle lastDamageStackTrace;
+        public TraceHandle destroyStackTrace;
+    }
 
     public partial class ECSWorldTestSystemBase : SystemBase
     {
         float nextUpdateTime = 0;
         private EntityQuery _query;
+        private Entity destroyHistorySingleton;
+
         protected override void OnCreate()
         {
             _query = new EntityQueryBuilder(Unity.Collections.Allocator.Temp)
                    .WithAll<Health>()
                    .Build(this);
+            destroyHistorySingleton = EntityManager.CreateEntity();
+            EntityManager.SetName(destroyHistorySingleton, "History (Destroy)");
+            EntityManager.AddBuffer<HistoryElement_Destroy>(destroyHistorySingleton);
         }
 
         protected override void OnDestroy()
@@ -76,6 +92,20 @@ namespace Elfinik.BurstTrace.Samples
 
         protected override void OnUpdate()
         {
+            var destroyHistorySingleton = this.destroyHistorySingleton;
+            if (ECSWorldTest.Instance != null)
+            {
+                var historyBuffer = EntityManager.GetBuffer<HistoryElement_Destroy>(destroyHistorySingleton);
+                var text = ECSWorldTest.Instance.outputText;
+                text.text = "";
+                if (historyBuffer.IsEmpty)
+                    text.text = $"Here will be the history of destroyed entities";
+                foreach (var item in historyBuffer)
+                {
+                    text.text += $"Entity {item.destroyedEntity} destroyed:\r\n{item.destroyStackTrace.ToProjectLink()}\r\nLast damage:\r\n{item.lastDamageStackTrace.ToProjectLink()}\r\n\r\n";
+                }
+            }
+
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             var commandBuffer = ecbSingleton.CreateCommandBuffer(this.CheckedStateRef.WorldUnmanaged);
             var commandBufferPW = commandBuffer.AsParallelWriter();
@@ -87,7 +117,12 @@ namespace Elfinik.BurstTrace.Samples
                 nextUpdateTime = (float)SystemAPI.Time.ElapsedTime + 1;
                 Dependency = Entities.ForEach((ref DynamicBuffer<DamageRequest> damageRequests) =>
                 {
-                    damageRequests.Add(new DamageRequest { damageTime = thisTime, damageValue = 1, sendFrom = TraceHandle.Capture(systemLog) });
+                    damageRequests.Add(new DamageRequest
+                    {
+                        damageTime = thisTime,
+                        damageValue = 1,
+                        sendFrom = TraceHandle.Capture(systemLog)
+                    });
                 }).ScheduleParallel(Dependency);
                 var job = new DelayedDamageJob
                 {
@@ -120,16 +155,24 @@ namespace Elfinik.BurstTrace.Samples
                     damageRequestsHistory.RemoveAt(0);
                 }
             }).Schedule(Dependency);
-            Dependency.Complete();
-            Entities.WithoutBurst().ForEach((Entity entity, int entityInQueryIndex, in Health health) =>
+            Dependency = Entities.ForEach((ref DynamicBuffer<HistoryElement_Destroy> history) =>
+            {
+                while(history.Length > 50)
+                    history.RemoveAt(0);
+            }).Schedule(Dependency);
+            Dependency = Entities.ForEach((Entity entity, int entityInQueryIndex, in Health health) =>
             {
                 if (health.myHP <= 0)
                 {
                     commandBuffer.DestroyEntity(entity);
-                    //Debug.LogError($"Entity {entity} destroyed. From {health.destroyedStackTrace.ToStringRelativeProjectPathManaged()}");
-                    BurstTraceSampleMono.Instance.LogToUI($"Entity {entity} destroyed. From {health.destroyedStackTrace.ToProjectLink()}");
+                    commandBuffer.AppendToBuffer(destroyHistorySingleton, new HistoryElement_Destroy
+                    {
+                        destroyedEntity = entity,
+                        destroyStackTrace = TraceHandle.Capture(),
+                        lastDamageStackTrace = health.destroyedStackTrace
+                    });
                 }
-            }).Run();
+            }).Schedule(Dependency);
         }
     }
 
@@ -147,7 +190,13 @@ namespace Elfinik.BurstTrace.Samples
             var entities = chunk.GetNativeArray(EntityType);
             for (int i = 0; i < chunk.Count; i++)
             {
-                ECB.AppendToBuffer(unfilteredChunkIndex, entities[i], new DamageRequest { damageTime = gameTime, damageValue = rnd.NextInt(1, 3), sendFrom = TraceHandle.Capture(systemLog) });
+                ECB.AppendToBuffer(unfilteredChunkIndex, entities[i], new DamageRequest
+                {
+                    damageTime = gameTime,
+                    damageValue = rnd.NextInt(1, 3),
+                    sendFrom =
+                    TraceHandle.Capture(systemLog)
+                });
             }
         }
     }
@@ -155,6 +204,9 @@ namespace Elfinik.BurstTrace.Samples
 #else
 namespace Elfinik.BurstTrace.Samples
 {
-    public class ECSWorldTest : MonoBehaviour { }
+    public class ECSWorldTest : MonoBehaviour
+    {
+        public Text outputText;
+    }
 }
 #endif

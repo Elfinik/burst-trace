@@ -35,7 +35,7 @@ https://github.com/Elfinik/burst-trace.git
 The package is available on the [openupm registry](https://openupm.com/packages/com.elfinik.burst-trace). It's recommended to install it via [openupm-cli](https://github.com/openupm/openupm-cli).
 
 ```
-openupm add com.elfinik.bursttrace
+openupm add com.elfinik.burst-trace
 ```
 
 ## または `manifest.json` 経由 (Or via manifest.json)

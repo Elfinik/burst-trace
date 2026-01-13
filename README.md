@@ -1,5 +1,6 @@
 ![Header.png](Documentation~/Images/Header.png)
-![Unity 2022.3+](https://img.shields.io/badge/Unity-2022.3%2B-black?logo=unity) ![Version](https://img.shields.io/badge/version-v1.0.0-blue) ![License: MIT](https://img.shields.io/badge/License-MIT-g.svg) 
+![Unity 2022.3+](https://img.shields.io/badge/Unity-2022.3%2B-black?logo=unity) ![Version](https://img.shields.io/badge/version-v1.0.0-blue) ![License: MIT](https://img.shields.io/badge/License-MIT-g.svg)  [![openupm](https://img.shields.io/npm/v/com.elfinik.burst-trace?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.elfinik.burst-trace/)
+
 - [Quick Start](#quick-start)
 - [Performance Tests](#performance-tests)
 - [ECS Integration (Optional)](#ecs-integration)
@@ -38,7 +39,7 @@ https://github.com/Elfinik/burst-trace.git
 The package is available on the [openupm registry](https://openupm.com/packages/com.elfinik.burst-trace). It's recommended to install it via [openupm-cli](https://github.com/openupm/openupm-cli).
 
 ```
-openupm add com.elfinik.bursttrace
+openupm add com.elfinik.burst-trace
 ```
 
 ## Or via `manifest.json`
