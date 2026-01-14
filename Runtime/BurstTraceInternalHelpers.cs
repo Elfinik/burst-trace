@@ -667,6 +667,7 @@ namespace Elfinik.BurstTrace.Internal
             nestedMap.Dispose();
             nestedRows.Dispose();
             BurstTraceSharedStatic.InfoField.Data = default;
+            SerializedMap.ResetSession();
         }
 
         [System.Serializable]
@@ -688,6 +689,7 @@ namespace Elfinik.BurstTrace.Internal
                 }
             }
             private static SerializedMap _instance;
+            internal static void ResetSession() => _instance = null;
 
 
             public Dictionary<uint, string> values;
