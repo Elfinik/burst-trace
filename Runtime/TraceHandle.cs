@@ -35,6 +35,8 @@ namespace Elfinik.BurstTrace
         private const uint ThreadIdMask = 0x7FF;
         private const uint CombinedFlagMask = 0x1;
 
+        internal const int RowIdMaskLimit = 0xFFFFF - 1;
+
         public int RowIndex
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

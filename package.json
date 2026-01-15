@@ -1,6 +1,6 @@
 {
   "name": "com.elfinik.burst-trace",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Burst Trace",
   "description": "High-performance, zero-allocation stack trace logger for Unity Mono/DOTS, Burst, and Jobs. Safely capture call chains in multithreaded code.",
   "unity": "2022.3",

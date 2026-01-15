@@ -235,10 +235,10 @@ namespace Elfinik.BurstTrace.Internal
 #endif
             if (!input.rows.IsCreated)
             {
-                return default;
 #if BURSTTRACE_CAPTURE_PROFILER
             MarkerSaveLog.End();
 #endif
+                return default;
             }
             var threadIndex = input.GetThreadIndex;
             var map = input.hashedMap.Get(threadIndex);
@@ -251,6 +251,14 @@ namespace Elfinik.BurstTrace.Internal
                 return new TraceHandle(index, threadIndex);
             }
             var rows = input.rows.Get(threadIndex);
+            if (rows.Length >= TraceHandle.RowIdMaskLimit)
+            {
+#if BURSTTRACE_CAPTURE_PROFILER
+            MarkerSaveLog.End();
+#endif
+                Debug.LogError("BurstTrace: Too many logs (> 1 048 573)!");
+                return default;
+            }
             map.Add(hashedKey, rows.Length);
             rows.Add(log);
 #if BURSTTRACE_CAPTURE_PROFILER
@@ -269,10 +277,10 @@ namespace Elfinik.BurstTrace.Internal
 #endif
             if (!input.rows.IsCreated)
             {
-                return default;
 #if BURSTTRACE_CAPTURE_PROFILER
             MarkerSaveLog.End();
 #endif
+                return default;
             }
         var threadIndex = input.GetThreadIndex;
         var map = input.map.Get(threadIndex);
@@ -286,6 +294,14 @@ namespace Elfinik.BurstTrace.Internal
             return new TraceHandle(index, threadIndex);
         }
         var rows = input.rows.Get(threadIndex);
+        if (rows.Length >= TraceHandle.RowIdMaskLimit)
+        {
+#if BURSTTRACE_CAPTURE_PROFILER
+        MarkerSaveLog.End();
+#endif
+            Debug.LogError("BurstTrace: Too many logs (> 1 048 573)!");
+            return default;
+        }
         map.Add(log, rows.Length);
         rows.Add(log);
 #if BURSTTRACE_CAPTURE_PROFILER
@@ -306,10 +322,10 @@ namespace Elfinik.BurstTrace.Internal
 #endif
             if (!input.rows.IsCreated)
             {
-                return default;
 #if BURSTTRACE_CAPTURE_PROFILER
             MarkerSaveLog.End();
 #endif
+                return default;
             }
             var threadIndex = customThread;
             var map = input.hashedMap.Get(threadIndex);
@@ -323,6 +339,14 @@ namespace Elfinik.BurstTrace.Internal
                 return new TraceHandle(index, threadIndex);
             }
             var rows = input.rows.Get(threadIndex);
+            if (rows.Length >= TraceHandle.RowIdMaskLimit)
+            {
+#if BURSTTRACE_CAPTURE_PROFILER
+            MarkerSaveLog.End();
+#endif
+                Debug.LogError("BurstTrace: Too many logs (> 1 048 573)!");
+                return default;
+            }
             map.Add(hashedKey, rows.Length);
             rows.Add(log);
 #if BURSTTRACE_CAPTURE_PROFILER
@@ -341,10 +365,10 @@ namespace Elfinik.BurstTrace.Internal
 #endif
             if (!input.rows.IsCreated)
             {
-                return default;
 #if BURSTTRACE_CAPTURE_PROFILER
             MarkerSaveLog.End();
 #endif
+                return default;
             }
         var threadIndex = customThread;
         var map = input.map.Get(threadIndex);
@@ -358,6 +382,14 @@ namespace Elfinik.BurstTrace.Internal
             return new TraceHandle(index, threadIndex);
         }
         var rows = input.rows.Get(threadIndex);
+        if (rows.Length >= TraceHandle.RowIdMaskLimit)
+        {
+#if BURSTTRACE_CAPTURE_PROFILER
+        MarkerSaveLog.End();
+#endif
+            Debug.LogError("BurstTrace: Too many logs (> 1 048 573)!");
+            return default;
+        }
         map.Add(log, rows.Length);
         rows.Add(log);
 #if BURSTTRACE_CAPTURE_PROFILER
@@ -381,10 +413,10 @@ namespace Elfinik.BurstTrace.Internal
 #endif
             if (!input.rows.IsCreated)
             {
-                return default;
 #if BURSTTRACE_CAPTURE_PROFILER
             MarkerNestedSaveLog.End();
 #endif
+                return default;
             }
             var key = new uint2(preview.Value, r.Value);
 
@@ -392,13 +424,20 @@ namespace Elfinik.BurstTrace.Internal
             var map = input.nestedMap.Get(threadIndex);
             var rows = input.nestedRows.Get(threadIndex);
 
-
             if (map.TryGetValue(key, out var index))
             {
 #if BURSTTRACE_CAPTURE_PROFILER
                 MarkerNestedSaveLog.End();
 #endif
                 return new TraceHandle(index, threadIndex, true);
+            }
+            if (rows.Length >= TraceHandle.RowIdMaskLimit)
+            {
+#if BURSTTRACE_CAPTURE_PROFILER
+            MarkerSaveLog.End();
+#endif
+                Debug.LogError("BurstTrace: Too many logs (> 1 048 573)!");
+                return default;
             }
             map.Add(key, rows.Length);
             rows.Add(key);
@@ -421,10 +460,10 @@ namespace Elfinik.BurstTrace.Internal
 #endif
             if (!input.rows.IsCreated)
             {
-                return default;
 #if BURSTTRACE_CAPTURE_PROFILER
             MarkerNestedSaveLog.End();
 #endif
+                return default;
             }
             var key = new uint2(preview.Value, r.Value);
 
@@ -432,13 +471,21 @@ namespace Elfinik.BurstTrace.Internal
             var map = input.nestedMap.Get(threadIndex);
             var rows = input.nestedRows.Get(threadIndex);
 
-
             if (map.TryGetValue(key, out var index))
             {
 #if BURSTTRACE_CAPTURE_PROFILER
                 MarkerNestedSaveLog.End();
 #endif
                 return new TraceHandle(index, threadIndex, true);
+            }
+
+            if (rows.Length >= TraceHandle.RowIdMaskLimit)
+            {
+#if BURSTTRACE_CAPTURE_PROFILER
+            MarkerSaveLog.End();
+#endif
+                Debug.LogError("BurstTrace: Too many logs (> 1 048 573)!");
+                return default;
             }
             map.Add(key, rows.Length);
             rows.Add(key);
