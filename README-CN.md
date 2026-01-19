@@ -2,10 +2,10 @@
 - [快速入门 (Quick Start)](#快速入门)
 - [性能测试 (Performance Tests)](#性能测试)
 - [ECS 集成 (可选)](#ecs-集成)
-- [文档 (进阶用法)](Documentation~/Advanced_Usage-CN.md) (CN)
-- [API](Documentation~/API-DOCS.md) 
-- [示例 (Unity 6+ 运行说明)](Documentation~/Samples.md)
-- [在 System.Threading.Tasks 中使用](Documentation~/Multithreading-No-Unity-Jobs.md)
+- [文档 (进阶用法)](Documentation~/Advanced_Usage-CN.md)
+- [API](Documentation~/API-DOCS-CN.md) 
+- [示例 (Unity 6+ 运行说明)](Documentation~/Samples-CN.md)
+- [在 System.Threading.Tasks 中使用](Documentation~/Multithreading-No-Unity-Jobs-CN.md)
 
 - [English](README.md)
 >中文文档由 AI (Gemini) 自动翻译生成，如有疏漏或歧义，请以英文原版为准。

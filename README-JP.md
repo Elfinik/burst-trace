@@ -2,10 +2,10 @@
 - [クイックスタート (Quick Start)](#クイックスタート) 
 - [パフォーマンステスト (Performance Tests)](#パフォーマンステスト) 
 - [ECS 統合 (任意)](#ecs-統合) 
-- [ドキュメント (高度な使用法)](Documentation~/Advanced_Usage.md) 
-- [API](Documentation~/API-DOCS.md) 
-- [サンプル (Unity 6+ で実行する場合)](Documentation~/Samples.md) 
-- [System.Threading.Tasks での使用](Documentation~/Multithreading-No-Unity-Jobs.md)
+- [ドキュメント (高度な使用法)](Documentation~/Advanced_Usage-JP.md) 
+- [API](Documentation~/API-DOCS-JP.md) 
+- [サンプル (Unity 6+ で実行する場合)](Documentation~/Samples-JP.md) 
+- [System.Threading.Tasks での使用](Documentation~/Multithreading-No-Unity-Jobs-JP.md)
 
 - [English](README.md)
 > **日本語ドキュメントは AI (Gemini) によって自動翻訳されたものです。不正確な点がある場合は、英語版を参照してください。**
