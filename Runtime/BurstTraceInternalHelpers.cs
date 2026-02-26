@@ -6,6 +6,7 @@ using Unity.Collections;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
+
 #if BURSTTRACE_CAPTURE_PROFILER
 using Unity.Profiling;
 #endif
@@ -35,7 +36,11 @@ namespace Elfinik.BurstTrace.Internal
 #endif
             var detailedLog = new DetailedLog
             {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+                path = BurstTraceInternal.Optimize(sourceFilePath),
+#else
                 path = sourceFilePath,
+#endif
                 member = memberName,
                 line = sourceLineNumber,
             };
@@ -71,7 +76,11 @@ namespace Elfinik.BurstTrace.Internal
 #endif
             var detailedLog = new DetailedLog
             {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+                path = BurstTraceInternal.Optimize(sourceFilePath),
+#else
                 path = sourceFilePath,
+#endif
                 member = memberName,
                 line = sourceLineNumber,
             };
@@ -133,7 +142,12 @@ namespace Elfinik.BurstTrace.Internal
         internal static string GetManagedLog(TraceHandle log)
         {
             if (!log.IsValid) return TraceHandle.INVALID_EMPTY_LOG_VALUE;
+            bool readFromDisk = false;
             if (Application.isPlaying)
+            {
+                readFromDisk = !BurstTraceSharedStatic.InfoField.Data.rows.IsCreated;
+            }
+            if (!readFromDisk)
             {
                 ref var map = ref BurstTraceSharedStatic.InfoField.Data;
                 if (!map.rows.IsCreated)
@@ -494,6 +508,109 @@ namespace Elfinik.BurstTrace.Internal
 #endif
             return new TraceHandle(rows.Length - 1, threadIndex, true);
         }
+
+#if BURSTTRACE_OPTIMIZE_MEMORY
+        public static string GetAbsolutePath() => GetAbsolutePathInternal();
+        private static string GetAbsolutePathInternal([CallerFilePath] string path = "")
+        {
+            return path;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe FixedString128Bytes Optimize(in FixedString512Bytes input)
+        {
+            var result = new FixedString128Bytes();
+            int sourceLen = input.Length;
+            int targetCapacity = result.Capacity;
+
+            if (sourceLen <= targetCapacity)
+            {
+                result.Append(input);
+                return result;
+            }
+
+            int offset = sourceLen - targetCapacity;
+
+            byte* sPtr = input.GetUnsafePtr();
+
+            while (offset < sourceLen && (sPtr[offset] & 0xC0) == 0x80)
+            {
+                offset++;
+            }
+
+            int copyLength = sourceLen - offset;
+
+            byte* dPtr = result.GetUnsafePtr();
+
+            UnsafeUtility.MemCpy(dPtr, sPtr + offset, copyLength);
+
+            result.Length = copyLength;
+            return result;
+        }
+
+        private const int MIN_MATCH_LENGTH = 16;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe FixedString512Bytes TryRestorePath(in FixedString128Bytes input)
+        {
+            if (!BurstTraceSharedStatic.InfoField.Data.absolutePath.IsCreated) return input;
+            var fullReference = BurstTraceSharedStatic.InfoField.Data.absolutePath.Value;
+            int truncLen = input.Length;
+            int fullLen = fullReference.Length;
+            if (truncLen < MIN_MATCH_LENGTH)
+            {
+                return new FixedString512Bytes(input);
+            }
+
+            byte* pTrunc = input.GetUnsafePtr();
+            byte* pFull = fullReference.GetUnsafePtr();
+
+            int anchorLen = math.min(truncLen, MIN_MATCH_LENGTH);
+
+            int searchLimit = fullLen - anchorLen;
+
+            int matchIndex = -1;
+
+            for (int i = 0; i <= searchLimit; i++)
+            {
+                if (pFull[i] == pTrunc[0])
+                {
+                    if (UnsafeUtility.MemCmp(pFull + i, pTrunc, anchorLen) == 0)
+                    {
+                        matchIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            if (matchIndex == -1)
+            {
+                return new FixedString512Bytes(input);
+            }
+
+            FixedString512Bytes result = new FixedString512Bytes();
+
+            int finalLength = matchIndex + truncLen;
+
+            //if (finalLength > result.Capacity)
+            //    finalLength = result.Capacity;
+
+            byte* pResult = result.GetUnsafePtr();
+
+            if (matchIndex > 0)
+            {
+                UnsafeUtility.MemCpy(pResult, pFull, matchIndex);
+            }
+
+            int remainingSpace = result.Capacity - matchIndex;
+            int copyLen = math.min(truncLen, remainingSpace);
+
+            UnsafeUtility.MemCpy(pResult + matchIndex, pTrunc, copyLen);
+
+            result.Length = matchIndex + copyLen;
+
+            return result;
+        }
+#endif
     }
 
 
@@ -522,9 +639,15 @@ namespace Elfinik.BurstTrace.Internal
 #else
     internal ArrayOfAllocs<NativeHashMap<FixedString512Bytes, int>> map;
 #endif
+#if BURSTTRACE_OPTIMIZE_MEMORY
+        public NativeReference<FixedString512Bytes> absolutePath;
+#endif
 
         public BurstTraceDictionary(int rowsCount, Allocator allocator)
         {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+            absolutePath = new NativeReference<FixedString512Bytes>(BurstTraceInternal.GetAbsolutePath() , allocator);
+#endif
             var max = JobsUtility.ThreadIndexCount;
             if (JobsUtility.ThreadIndexCount > 2047)
                 Debug.LogError("BurstTrace: Too many threads! TraceHandle format limit exceeded.");
@@ -609,6 +732,11 @@ namespace Elfinik.BurstTrace.Internal
             }
             var res = new SerializedRoot
             {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+                absolutePath = BurstTraceInternal.GetAbsolutePath(),
+#else
+                absolutePath = "",
+#endif
                 serializableStackTrace = serializableStackTrace,
                 serializableStackTraceNested = serializableStackTraceNested,
             };
@@ -705,6 +833,9 @@ namespace Elfinik.BurstTrace.Internal
         public void Dispose()
         {
             SaveToFile();
+#if BURSTTRACE_OPTIMIZE_MEMORY
+            absolutePath.Dispose();
+#endif
 #if !BURSTTRACE_NOT_USE_64
             hashedMap.Dispose();
 #else
@@ -720,6 +851,7 @@ namespace Elfinik.BurstTrace.Internal
         [System.Serializable]
         public class SerializedRoot
         {
+            public string absolutePath;
             public List<SerializableStackTrace> serializableStackTrace;
             public List<SerializableStackTraceNested> serializableStackTraceNested;
         }
@@ -808,6 +940,16 @@ namespace Elfinik.BurstTrace.Internal
             };
         }
         public static ulong GenerateHash(in FixedString512Bytes path)
+        {
+            ulong hash = 14695981039346656037UL;
+            for (int i = 0; i < path.Length; i++)
+            {
+                hash ^= path[i];
+                hash *= 1099511628211UL;
+            }
+            return hash;
+        }
+        public static ulong GenerateHash(in FixedString128Bytes path)
         {
             ulong hash = 14695981039346656037UL;
             for (int i = 0; i < path.Length; i++)

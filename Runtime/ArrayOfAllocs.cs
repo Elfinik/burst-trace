@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Assertions;
 using UnityEngine;
+using Unity.Collections.BurstTrace;
 
 namespace Elfinik.BurstTrace.Internal
 {
@@ -50,7 +51,7 @@ namespace Elfinik.BurstTrace.Internal
         public void Allocate(int index, ref T data)
         {
             Assert.IsTrue(array[index] == IntPtr.Zero, $"Is not null: {array[index].GetHashCode()}");
-            array[index] = (IntPtr)CollectionsMemory.Allocate<T>(ref data);
+            array[index] = (IntPtr)BurstTrace_CollectionsMemory.Allocate<T>(ref data);
         }
         public void Dispose()
         {
@@ -64,7 +65,7 @@ namespace Elfinik.BurstTrace.Internal
                 }
                 T* r = (T*)item.ToPointer();
                 r->Dispose();
-                CollectionsMemory.Release(r);
+                BurstTrace_CollectionsMemory.Release(r);
             }
             array.Dispose();
         }

@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace Elfinik.BurstTrace.Editor
+namespace Elfinik.BurstTrace.EditorScripts
 {
     [CustomPropertyDrawer(typeof(TraceHandle))]
     public class BurstTraceDrawer : PropertyDrawer

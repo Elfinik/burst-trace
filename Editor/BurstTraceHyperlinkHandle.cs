@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Elfinik.BurstTrace.Editor
+namespace Elfinik.BurstTrace.EditorScripts
 {
     [InitializeOnLoad]
     internal static class BurstTraceHyperlinkHandle

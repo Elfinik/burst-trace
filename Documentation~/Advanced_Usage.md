@@ -66,6 +66,10 @@ string link = $"<a href=\"{relativePath}\" line=\"{lineNum}\">{relativePath}:{li
 You can configure aspects of the plugin in the menu `ProjectSettings > BurstTrace`.
 
 ⚠️ Do not change the file name or path! It must have the path `Resources/Burst Trace Config.asset`
+
+### Memory Optimization Mode (~3x)
+> This mode reduces memory usage by approximately 3 times. However, it introduces minor overhead during the initial log registration and when reading logs. It may also truncate or break the log output (string) for projects with deep directory nesting. **It is highly recommended not to enable this option if the relative paths of your script files (within the `Assets` folder) exceed 124 bytes!**
+
 ### Disable 64-hash optimization
 > The plugin replaces strings with hashes for optimization. By default, a 64-bit hash is used. The chance of collision is negligible but theoretically exists. If you encounter hash collisions (please create an Issue in the repository), enable this option. It will slightly reduce performance and increase memory usage, but completely eliminate the probability of collisions.
 

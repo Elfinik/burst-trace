@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs.LowLevel.Unsafe;
 using UnityEditor;
 using UnityEngine;
 
 
-namespace Elfinik.BurstTrace.Editor
+namespace Elfinik.BurstTrace.EditorScripts
 {
     public class BurstTraceSettingsRegister
     {
-        private static readonly string[] MyDefines = { "BURSTTRACE_NOT_USE_64", "BURSTTRACE_CAPTURE_PROFILER", "BURSTTRACE_DISABLE", "BURSTTRACE_FREE_MEMORY" };
+        private static readonly string[] MyDefines = { "BURSTTRACE_NOT_USE_64", "BURSTTRACE_CAPTURE_PROFILER", "BURSTTRACE_DISABLE", "BURSTTRACE_FREE_MEMORY", "BURSTTRACE_OPTIMIZE_MEMORY" };
         private static BurstTraceConfig _settings;
 
         [SettingsProvider]
@@ -35,10 +36,16 @@ namespace Elfinik.BurstTrace.Editor
 
                     EditorGUI.BeginChangeCheck();
 
+                    bool toggleE = DrawDefineToggle("Memory optimization mode (~x3)", MyDefines[4], definesList, $"It optimizes storage memory usage by ~3 times. In return, it creates minor overhead during the initial log registration and when reading logs, and may also break logging (output string) for projects with deep internal (within Assets) nesting. It is not recommended to enable this option if the local path (within Assets) of your files exceeds 124 bytes!");
+#if BURSTTRACE_NOT_USE_64
+                    if(toggleE)
+                        EditorGUILayout.HelpBox($"This function does not work when the \"Disable 64-hash optimization\" option is enabled.", MessageType.Error);
+#endif
                     bool toggleA = DrawDefineToggle("Disable 64-hash optimization", MyDefines[0], definesList, $"Enable this only if you encounter a hash collision in the logs. However, the chance of this happening is incredibly small. This setting will slightly reduce optimization, but it guarantees the absence of hash collisions.");
                     bool toggleB = DrawDefineToggle("Capture profiler", MyDefines[1], definesList, $"Enable this option so that every logging event is recorded in the profiler: this will allow you to see the actual load on the system. \r\n(Don't forget to disable it in the release version!)");
                     bool toggleC = DrawDefineToggle("Disable logs", MyDefines[2], definesList, $"Completely disable logging. Any calculations performed when calling logging functions will be removed, reducing overhead to zero. However, please note: <b>TraceHandle</b> still occupies 4 bytes, even though it is empty. This is done for safety and to prevent accidental failures during serialization, ensuring that the size does not change between builds.");
                     //bool toggleD = DrawDefineToggle("Free memory", MyDefines[3], definesList, $"If you are absolutely sure that you will not have any problems with resizing the structure, check this box: it will make the <b>TraceHandle</b> structure empty. This can save memory in ECS, but it is not recommended for stability reasons.\r\nIgnored if logging is enabled");
+
 
                     if (EditorGUI.EndChangeCheck())
                     {
@@ -67,10 +74,14 @@ namespace Elfinik.BurstTrace.Editor
                         int rawValue = EditorGUILayout.IntSlider("Alloc Size", _settings.preallocRows, 64, 4096);
                         _settings.preallocRows = Mathf.RoundToInt(rawValue / 64f) * 64;
 
-                        float mbValue = _settings.preallocRows / 1024f;
+#if !BURSTTRACE_NOT_USE_64
+                        float mbValue = _settings.preallocRows * (40 + UnsafeUtility.SizeOf<DetailedLog>()) / 1024F / 1024f;
+#else
+                        float mbValue = _settings.preallocRows * (40 + 512) / 1024F/ 1024f ;
+#endif
                         mbValue *= JobsUtility.ThreadIndexCount;
                         GUI.enabled = false;
-                        EditorGUILayout.TextField($"{mbValue:F1} MB", GUILayout.Width(60));
+                        EditorGUILayout.TextField($"~{mbValue:F1} MB", GUILayout.Width(60));
                         GUI.enabled = true;
 
                         EditorGUILayout.EndHorizontal();

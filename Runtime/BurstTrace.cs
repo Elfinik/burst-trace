@@ -60,7 +60,11 @@ namespace Elfinik.BurstTrace
 #endif
             var detailedLog = new DetailedLog
             {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+                path = BurstTraceInternal.Optimize(sourceFilePath),
+#else
                 path = sourceFilePath,
+#endif
                 member = memberName,
                 line = sourceLineNumber,
             };
@@ -105,7 +109,11 @@ namespace Elfinik.BurstTrace
 #endif
             var detailedLog = new DetailedLog
             {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+                path = BurstTraceInternal.Optimize(sourceFilePath),
+#else
                 path = sourceFilePath,
+#endif
                 member = memberName,
                 line = sourceLineNumber,
             };
@@ -135,7 +143,11 @@ namespace Elfinik.BurstTrace
         /// <summary>
         /// Path to the file (CS script)
         /// </summary>
+#if BURSTTRACE_OPTIMIZE_MEMORY
+        public FixedString128Bytes path;
+#else
         public FixedString512Bytes path;
+#endif
         /// <summary>
         /// The method that requested the log
         /// </summary>
@@ -147,12 +159,20 @@ namespace Elfinik.BurstTrace
 
         public string ConvertToString()
         {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+            return $"{member} (at {BurstTraceInternal.TryRestorePath(path)}:{line})";
+#else
             return $"{member} (at {path}:{line})";
+#endif
         }
 
         public FixedString512Bytes ConvertToStringBursted()
         {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+            return $"{member} (at {BurstTraceInternal.TryRestorePath(path)}:{line})";
+#else
             return $"{member} (at {path}:{line})";
+#endif
         }
     }
 }

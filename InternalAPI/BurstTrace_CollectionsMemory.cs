@@ -4,9 +4,9 @@ using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using Unity.Collections;
 
-namespace Unity.Collections
+namespace Unity.Collections.BurstTrace
 {
-    public unsafe static class CollectionsMemory
+    public unsafe static class BurstTrace_CollectionsMemory
     {
         public static void StartCaptureLeaks()
         {

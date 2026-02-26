@@ -45,7 +45,11 @@ namespace Elfinik.BurstTrace.Internal
             CheckThreadIndex(threadIndex);
             var detailedLog = new DetailedLog
             {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+                path = BurstTraceInternal.Optimize(sourceFilePath),
+#else
                 path = sourceFilePath,
+#endif
                 member = memberName,
                 line = sourceLineNumber,
             };
@@ -93,7 +97,11 @@ namespace Elfinik.BurstTrace.Internal
             CheckThreadIndex(threadIndex);
             var detailedLog = new DetailedLog
             {
+#if BURSTTRACE_OPTIMIZE_MEMORY
+                path = BurstTraceInternal.Optimize(sourceFilePath),
+#else
                 path = sourceFilePath,
+#endif
                 member = memberName,
                 line = sourceLineNumber,
             };

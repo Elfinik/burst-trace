@@ -67,6 +67,10 @@ string link = $"<a href=\"{relativePath}\" line=\"{lineNum}\">{relativePath}:{li
 你可以在 `ProjectSettings > BurstTrace` 菜单中配置插件的各个方面。
 
 ⚠️ Do not change the file name or path! It must have the path `Resources/Burst Trace Config.asset`
+
+### 内存优化模式 (~3倍)
+> 此模式可将存储内存使用量减少约 3 倍。作为交换，它会在初始日志注册和读取日志时产生轻微的额外开销。此外，对于在 `Assets` 文件夹内拥有极深嵌套层级的项目，它可能会破坏日志输出（字符串）。**如果你的文件相对路径（在 `Assets` 内）超过 124 个字节，强烈建议不要启用此选项！**
+
 ### Disable 64-hash optimization (禁用 64 位哈希优化)
 >插件将字符串替换为哈希以进行优化。默认情况下，使用 64 位哈希。碰撞的几率微乎其微，但理论上是存在的。如果你遇到哈希碰撞（请在仓库中创建一个 Issue），请启用此选项。它会稍微降低性能并增加内存使用量，但会完全消除碰撞的可能性。
 
