@@ -67,7 +67,7 @@ You can configure aspects of the plugin in the menu `ProjectSettings > BurstTrac
 
 ⚠️ Do not change the file name or path! It must have the path `Resources/Burst Trace Config.asset`
 
-### Memory Optimization Mode (~3x)
+### Memory Optimization Mode (~x3)
 > This mode reduces memory usage by approximately 3 times. However, it introduces minor overhead during the initial log registration and when reading logs. It may also truncate or break the log output (string) for projects with deep directory nesting. **It is highly recommended not to enable this option if the relative paths of your script files (within the `Assets` folder) exceed 124 bytes!**
 
 ### Disable 64-hash optimization

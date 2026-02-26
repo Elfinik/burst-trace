@@ -68,7 +68,7 @@ string link = $"<a href=\"{relativePath}\" line=\"{lineNum}\">{relativePath}:{li
 
 ⚠️ Do not change the file name or path! It must have the path `Resources/Burst Trace Config.asset`
 
-### 内存优化模式 (~3倍)
+###  Memory optimization mode (~x3)
 > 此模式可将存储内存使用量减少约 3 倍。作为交换，它会在初始日志注册和读取日志时产生轻微的额外开销。此外，对于在 `Assets` 文件夹内拥有极深嵌套层级的项目，它可能会破坏日志输出（字符串）。**如果你的文件相对路径（在 `Assets` 内）超过 124 个字节，强烈建议不要启用此选项！**
 
 ### Disable 64-hash optimization (禁用 64 位哈希优化)

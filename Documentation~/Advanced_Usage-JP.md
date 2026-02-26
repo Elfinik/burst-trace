@@ -67,7 +67,7 @@ string link = $"<a href=\"{relativePath}\" line=\"{lineNum}\">{relativePath}:{li
 
 ⚠️ ファイル名やパスを変更しないでください！ パスは `Resources/Burst Trace Config.asset` である必要があります。
 
-### メモリ最適化モード (~3倍)
+###  Memory optimization mode (~x3)
 > このモードは、ストレージメモリの使用量を約3分の1に削減（約3倍の最適化）します。その代わり、初回のログ登録時およびログ読み取り時にわずかなオーバーヘッドが発生します。また、`Assets` フォルダ内のディレクトリ階層が深すぎるプロジェクトでは、ログの出力（文字列）が破損する可能性があります。**ファイルの相対パス（`Assets` フォルダ内）が124バイトを超える場合は、このオプションを有効にすることは推奨されません！**
 
 ### Disable 64-hash optimization

@@ -142,7 +142,7 @@ namespace Elfinik.BurstTrace.Internal
         internal static string GetManagedLog(TraceHandle log)
         {
             if (!log.IsValid) return TraceHandle.INVALID_EMPTY_LOG_VALUE;
-            bool readFromDisk = false;
+            bool readFromDisk = true;
             if (Application.isPlaying)
             {
                 readFromDisk = !BurstTraceSharedStatic.InfoField.Data.rows.IsCreated;
