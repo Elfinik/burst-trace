@@ -39,6 +39,10 @@ namespace Elfinik.BurstTrace.ReadMe
 
         public override void OnInspectorGUI()
         {
+            bool previousGuiState = GUI.enabled;
+
+            GUI.enabled = true;
+
             InitStyles();
 
             GUILayout.Space(10);
@@ -79,6 +83,8 @@ namespace Elfinik.BurstTrace.ReadMe
 
             GUILayout.Space(15);
             GUILayout.Label("For advanced usage, please refer to the documentation.", textStyle);
+
+            GUI.enabled = previousGuiState;
         }
 
         private void DrawCodeSnippet(string code)
