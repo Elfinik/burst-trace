@@ -5,6 +5,7 @@ using Unity.Collections;
 using UnityEngine;
 using Elfinik.BurstTrace.Internal;
 using UnityEngine.Profiling;
+using Unity.Collections.BurstTrace;
 
 namespace Elfinik.BurstTrace.Tests
 {
@@ -14,11 +15,11 @@ namespace Elfinik.BurstTrace.Tests
         [Test]
         public void Recording_And_Disposing_ShouldNotLeak()
         {
-            CollectionsMemory.StartCaptureLeaks();
-            var leaks = CollectionsMemory.ForgiveLeaksNow();
+            BurstTrace_CollectionsMemory.StartCaptureLeaks();
+            var leaks = BurstTrace_CollectionsMemory.ForgiveLeaksNow();
             var controller = GameObject.FindAnyObjectByType<BurstTraceSessionController>();
             controller.DestroyAndDispose();
-            leaks = CollectionsMemory.CheckLeaksNow();
+            leaks = BurstTrace_CollectionsMemory.CheckLeaksNow();
             Assert.AreEqual(leaks, 0, "Container not disposed!");
 
             var stackStorage = new BurstTraceDictionary(512, Unity.Collections.Allocator.Persistent);
@@ -29,7 +30,7 @@ namespace Elfinik.BurstTrace.Tests
             }
 
             stackStorage.Dispose();
-            leaks = CollectionsMemory.CheckLeaksNow();
+            leaks = BurstTrace_CollectionsMemory.CheckLeaksNow();
 
             Assert.AreEqual(leaks, 0, "Log entries should not allocate managed memory");
             BurstTraceSessionController.ForceInitialize();

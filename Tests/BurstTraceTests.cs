@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using Elfinik.BurstTrace.Internal;
+using Unity.Collections.BurstTrace;
 
 namespace Elfinik.BurstTrace.Tests
 {
@@ -316,8 +317,8 @@ namespace Elfinik.BurstTrace.Tests
 
             //var totalMemoryAllocatedBefore = BurstTraceAdvanced.GetTotalAllocatedMemory();
             //var totalMemoryUsedBefore = BurstTraceAdvanced.GetUsedMemory();
-            CollectionsMemory.ForgiveLeaksNow();
-            CollectionsMemory.StartCaptureLeaks();
+            BurstTrace_CollectionsMemory.ForgiveLeaksNow();
+            BurstTrace_CollectionsMemory.StartCaptureLeaks();
             //System.GC.Collect();
             //System.GC.WaitForPendingFinalizers();
             //long memoryBefore = System.GC.GetTotalMemory(true);
@@ -326,7 +327,7 @@ namespace Elfinik.BurstTrace.Tests
             {
                 t = TraceHandle.Capture(t);
             }
-            var leaksCount = CollectionsMemory.CheckLeaksNow();
+            var leaksCount = BurstTrace_CollectionsMemory.CheckLeaksNow();
 
             //long memoryAfter = System.GC.GetTotalMemory(true);
             //var totalMemoryAllocatedAfter = BurstTraceAdvanced.GetTotalAllocatedMemory();

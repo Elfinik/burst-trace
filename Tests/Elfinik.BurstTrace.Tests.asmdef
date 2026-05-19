@@ -3,7 +3,6 @@
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
         "Unity.Burst",
         "Unity.Collections",
         "Unity.PerformanceTesting",
