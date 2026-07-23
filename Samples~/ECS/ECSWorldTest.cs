@@ -17,6 +17,13 @@ namespace Elfinik.BurstTrace.Samples
         {
             Instance = this;
             var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+            var testSystem = em.World.GetExistingSystemManaged<ECSWorldTestSystemBase>();
+            if (testSystem == null)
+            {
+                testSystem = em.World.CreateSystemManaged<ECSWorldTestSystemBase>();
+                var simulationGroup = em.World.GetOrCreateSystemManaged<SimulationSystemGroup>();
+                simulationGroup.AddSystemToUpdateList(testSystem);
+            }
             var entityFromStart = em.CreateEntity();
             em.SetName(entityFromStart, "Spawned From Start");
             em.AddComponentData(entityFromStart, new SpawnEntitySource { spawnFrom = TraceHandle.Capture() });
@@ -70,6 +77,7 @@ namespace Elfinik.BurstTrace.Samples
         public TraceHandle destroyStackTrace;
     }
 
+    [DisableAutoCreation]
     public partial class ECSWorldTestSystemBase : SystemBase
     {
         float nextUpdateTime = 0;
